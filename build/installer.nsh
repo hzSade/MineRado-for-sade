@@ -1,0 +1,404 @@
+!ifndef MUI_BGCOLOR
+  !define MUI_BGCOLOR "FFFFFF"
+!endif
+!ifndef MUI_TEXTCOLOR
+  !define MUI_TEXTCOLOR "111217"
+!endif
+!ifndef MUI_DIRECTORYPAGE_BGCOLOR
+  !define MUI_DIRECTORYPAGE_BGCOLOR "FFFFFF"
+!endif
+!ifndef MUI_DIRECTORYPAGE_TEXTCOLOR
+  !define MUI_DIRECTORYPAGE_TEXTCOLOR "111217"
+!endif
+!ifndef MUI_INSTFILESPAGE_COLORS
+  !define MUI_INSTFILESPAGE_COLORS "3257F7 FFFFFF"
+!endif
+!ifndef MUI_FINISHPAGE_LINK_COLOR
+  !define MUI_FINISHPAGE_LINK_COLOR "3257F7"
+!endif
+!ifndef MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE
+!endif
+!ifndef MUI_HEADERIMAGE_BITMAP_STRETCH
+  !define MUI_HEADERIMAGE_BITMAP_STRETCH "FitControl"
+!endif
+!ifndef MUI_HEADERIMAGE_UNBITMAP_STRETCH
+  !define MUI_HEADERIMAGE_UNBITMAP_STRETCH "FitControl"
+!endif
+!ifndef BUILD_UNINSTALLER
+  !ifndef MUI_CUSTOMFUNCTION_GUIINIT
+    !define MUI_CUSTOMFUNCTION_GUIINIT MineradioGuiInit
+  !endif
+!endif
+
+!include LogicLib.nsh
+!include FileFunc.nsh
+!include nsDialogs.nsh
+!include WinMessages.nsh
+
+!define MINERADIO_INSTALL_MARKER ".mineradio-install-root"
+
+!ifndef BUILD_UNINSTALLER
+  Var MineradioWelcomePage
+  Var MineradioHeroFont
+  Var MineradioTitleFont
+  Var MineradioBodyFont
+  Var MineradioSmallFont
+  Var MineradioDirectoryPage
+  Var MineradioDirectoryInput
+!endif
+
+!macro customInit
+  !ifndef BUILD_UNINSTALLER
+    Call MineradioUsePreferredInstallDir
+  !endif
+!macroend
+
+!macro customInstall
+  Call MineradioWriteInstallMarker
+!macroend
+
+!macro customUnInit
+  Call un.MineradioAbortUnsafeUninstallRoot
+!macroend
+
+!macro customWelcomePage
+  Page custom MineradioWelcomeShow
+!macroend
+
+!macro customInstallMode
+  StrCpy $isForceCurrentInstall "1"
+!macroend
+
+!macro customPageAfterChangeDir
+  Page custom MineradioDirectoryShow MineradioDirectoryLeave
+!macroend
+
+!macro customFinishPage
+  !ifndef HIDE_RUN_AFTER_FINISH
+    Function MineradioFinishStartApp
+      ${If} ${isUpdated}
+        StrCpy $1 "--updated"
+      ${Else}
+        StrCpy $1 ""
+      ${EndIf}
+      ${StdUtils.ExecShellAsUser} $0 "$launchLink" "open" "$1"
+    FunctionEnd
+
+    !define MUI_FINISHPAGE_RUN
+    !define MUI_FINISHPAGE_RUN_FUNCTION "MineradioFinishStartApp"
+  !endif
+  !define MUI_PAGE_CUSTOMFUNCTION_SHOW MineradioTintCommonControls
+  !insertmacro MUI_PAGE_FINISH
+!macroend
+
+!ifndef BUILD_UNINSTALLER
+Function MineradioGuiInit
+  System::Call 'dwmapi::DwmSetWindowAttribute(p $HWNDPARENT, i 20, *i 1, i 4) i .r0'
+  System::Call 'dwmapi::DwmSetWindowAttribute(p $HWNDPARENT, i 19, *i 1, i 4) i .r0'
+  Call MineradioTintCommonControls
+FunctionEnd
+
+Function MineradioTintCommonControls
+  SetCtlColors $HWNDPARENT "111217" "FFFFFF"
+
+  GetDlgItem $0 $HWNDPARENT 1
+  ${If} $0 <> 0
+    SetCtlColors $0 "111217" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 2
+  ${If} $0 <> 0
+    SetCtlColors $0 "111217" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 3
+  ${If} $0 <> 0
+    SetCtlColors $0 "111217" "FFFFFF"
+  ${EndIf}
+
+  GetDlgItem $0 $HWNDPARENT 1028
+  ${If} $0 <> 0
+    SetCtlColors $0 "4B5263" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1256
+  ${If} $0 <> 0
+    SetCtlColors $0 "4B5263" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1034
+  ${If} $0 <> 0
+    SetCtlColors $0 "" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1035
+  ${If} $0 <> 0
+    SetCtlColors $0 "" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1037
+  ${If} $0 <> 0
+    SetCtlColors $0 "111217" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1038
+  ${If} $0 <> 0
+    SetCtlColors $0 "4B5263" "FFFFFF"
+  ${EndIf}
+  GetDlgItem $0 $HWNDPARENT 1039
+  ${If} $0 <> 0
+    SetCtlColors $0 "" "FFFFFF"
+  ${EndIf}
+
+  FindWindow $0 "#32770" "" $HWNDPARENT
+  ${If} $0 <> 0
+    SetCtlColors $0 "111217" "FFFFFF"
+
+    GetDlgItem $1 $0 1000
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1001
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1004
+    ${If} $1 <> 0
+      SetCtlColors $1 "3257F7" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1006
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1016
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1019
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1020
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1023
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1024
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1027
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1201
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1202
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1203
+    ${If} $1 <> 0
+      SetCtlColors $1 "111217" "FFFFFF"
+    ${EndIf}
+    GetDlgItem $1 $0 1204
+    ${If} $1 <> 0
+      SetCtlColors $1 "4B5263" "FFFFFF"
+    ${EndIf}
+  ${EndIf}
+FunctionEnd
+
+Function MineradioUsePreferredInstallDir
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "/D=" $R1
+  ${IfNot} ${Errors}
+  ${AndIf} $R1 != ""
+    Push "$R1"
+    Call MineradioNormalizeInstallDir
+    Pop $INSTDIR
+  ${Else}
+    IfFileExists "D:\*.*" 0 +2
+    StrCpy $INSTDIR "D:\Mineradio"
+  ${EndIf}
+FunctionEnd
+
+Function MineradioNormalizeInstallDir
+  Exch $0
+  ${If} $0 == ""
+    StrCpy $0 "D:\Mineradio"
+    Exch $0
+    Return
+  ${EndIf}
+
+  StrCpy $4 "$0" 1 -1
+  ${If} $4 == "\"
+    StrCpy $0 "$0" -1
+  ${EndIf}
+
+  StrLen $1 "$0"
+  ${If} $1 == 2
+    StrCpy $2 "$0" 1 1
+    ${If} $2 == ":"
+      StrCpy $0 "$0\Mineradio"
+    ${EndIf}
+  ${ElseIf} $1 == 3
+    StrCpy $2 "$0" 1 1
+    StrCpy $3 "$0" 1 2
+    ${If} $2 == ":"
+    ${AndIf} $3 == "\"
+      StrCpy $0 "$0Mineradio"
+    ${EndIf}
+  ${Else}
+    ${GetFileName} "$0" $2
+    ${If} $2 != "Mineradio"
+    ${AndIf} $2 != "mineradio"
+      StrCpy $0 "$0\Mineradio"
+    ${EndIf}
+  ${EndIf}
+  Exch $0
+FunctionEnd
+
+Function MineradioWriteInstallMarker
+  CreateDirectory "$INSTDIR"
+  ClearErrors
+  FileOpen $0 "$INSTDIR\${MINERADIO_INSTALL_MARKER}" w
+  ${If} ${Errors}
+    MessageBox MB_ICONSTOP|MB_OK "Не удалось записать метку безопасности в папку установки, установка остановлена. Выберите доступную для записи папку, предназначенную для Mineradio."
+    Abort
+  ${EndIf}
+  FileWrite $0 "Mineradio install root marker.$\r$\n"
+  FileClose $0
+FunctionEnd
+!endif
+
+!ifdef BUILD_UNINSTALLER
+Function un.MineradioAbortUnsafeUninstallRoot
+  ${GetFileName} "$INSTDIR" $0
+  ${If} $0 != "Mineradio"
+  ${AndIf} $0 != "mineradio"
+    MessageBox MB_ICONSTOP|MB_OK "Удаление отменено: $INSTDIR не является папкой, предназначенной для Mineradio. Во избежание случайного удаления ваших файлов удалите программные файлы Mineradio вручную."
+    Abort
+  ${EndIf}
+  IfFileExists "$INSTDIR\${MINERADIO_INSTALL_MARKER}" safe 0
+  MessageBox MB_ICONSTOP|MB_OK "Удаление отменено: $INSTDIR не является папкой, предназначенной для Mineradio (отсутствует метка безопасности ${MINERADIO_INSTALL_MARKER}). Во избежание случайного удаления ваших файлов удалите программные файлы Mineradio вручную."
+  Abort
+safe:
+FunctionEnd
+!endif
+
+!ifndef BUILD_UNINSTALLER
+Function MineradioWelcomeShow
+  Call MineradioUsePreferredInstallDir
+
+  nsDialogs::Create 1018
+  Pop $MineradioWelcomePage
+  ${If} $MineradioWelcomePage == error
+    Abort
+  ${EndIf}
+
+  SetCtlColors $MineradioWelcomePage "111217" "FFFFFF"
+  CreateFont $MineradioHeroFont "Microsoft YaHei UI" 24 700
+  CreateFont $MineradioTitleFont "Microsoft YaHei UI" 11 700
+  CreateFont $MineradioBodyFont "Microsoft YaHei UI" 9 400
+  CreateFont $MineradioSmallFont "Microsoft YaHei UI" 8 400
+
+  ${NSD_CreateLabel} 22u 20u 82u 10u "MINERADIO"
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioSmallFont 1
+  SetCtlColors $0 "3257F7" "FFFFFF"
+
+  ${NSD_CreateLabel} 22u 42u 226u 30u "Установка Mineradio"
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioHeroFont 1
+  SetCtlColors $0 "111217" "FFFFFF"
+
+  ${NSD_CreateLabel} 22u 78u 36u 2u ""
+  Pop $0
+  SetCtlColors $0 "" "3257F7"
+
+  ${NSD_CreateLabel} 22u 96u 238u 24u "Установка Mineradio на этот компьютер. По умолчанию устанавливается в D:\Mineradio; при выборе другого расположения будет автоматически создана отдельная подпапка Mineradio."
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioBodyFont 1
+  SetCtlColors $0 "4B5263" "FFFFFF"
+
+  ${NSD_CreateLabel} 22u 130u 238u 12u "Расположение по умолчанию: $INSTDIR"
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioTitleFont 1
+  SetCtlColors $0 "3257F7" "FFFFFF"
+
+  nsDialogs::Show
+FunctionEnd
+
+Function MineradioDirectoryBrowse
+  nsDialogs::SelectFolderDialog "Выберите папку установки Mineradio" "$INSTDIR"
+  Pop $0
+  ${If} $0 != error
+  ${AndIf} $0 != ""
+    Push "$0"
+    Call MineradioNormalizeInstallDir
+    Pop $0
+    StrCpy $INSTDIR "$0"
+    SendMessage $MineradioDirectoryInput ${WM_SETTEXT} 0 "STR:$INSTDIR"
+  ${EndIf}
+FunctionEnd
+
+Function MineradioDirectoryShow
+  Call MineradioUsePreferredInstallDir
+
+  nsDialogs::Create 1018
+  Pop $MineradioDirectoryPage
+  ${If} $MineradioDirectoryPage == error
+    Abort
+  ${EndIf}
+
+  SetCtlColors $MineradioDirectoryPage "111217" "FFFFFF"
+  CreateFont $MineradioTitleFont "Microsoft YaHei UI" 15 700
+  CreateFont $MineradioBodyFont "Microsoft YaHei UI" 9 400
+  CreateFont $MineradioSmallFont "Microsoft YaHei UI" 8 500
+
+  ${NSD_CreateLabel} 22u 12u 238u 20u "Выбор места установки"
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioTitleFont 1
+  SetCtlColors $0 "111217" "FFFFFF"
+
+  ${NSD_CreateLabel} 22u 40u 238u 24u "Вы можете использовать путь по умолчанию или выбрать другой диск/папку. Установщик автоматически создаст отдельную подпапку Mineradio, чтобы удаление не затронуло другие файлы."
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioBodyFont 1
+  SetCtlColors $0 "4B5263" "FFFFFF"
+
+  ${NSD_CreateLabel} 22u 76u 238u 10u "Папка установки"
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioSmallFont 1
+  SetCtlColors $0 "3257F7" "FFFFFF"
+
+  ${NSD_CreateText} 22u 94u 178u 15u "$INSTDIR"
+  Pop $MineradioDirectoryInput
+  SendMessage $MineradioDirectoryInput ${WM_SETFONT} $MineradioBodyFont 1
+  SetCtlColors $MineradioDirectoryInput "111217" "FFFFFF"
+
+  ${NSD_CreateBrowseButton} 210u 93u 50u 17u "Обзор..."
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioSmallFont 1
+  ${NSD_OnClick} $0 MineradioDirectoryBrowse
+
+  ${NSD_CreateLabel} 22u 122u 238u 12u "Рекомендуется по умолчанию: D:\Mineradio; при выборе существующей папки к пути будет автоматически добавлено Mineradio."
+  Pop $0
+  SendMessage $0 ${WM_SETFONT} $MineradioSmallFont 1
+  SetCtlColors $0 "6B7280" "FFFFFF"
+
+  nsDialogs::Show
+FunctionEnd
+
+Function MineradioDirectoryLeave
+  ${NSD_GetText} $MineradioDirectoryInput $0
+  ${If} $0 == ""
+    MessageBox MB_ICONEXCLAMATION|MB_OK "Пожалуйста, выберите папку установки."
+    Abort
+  ${EndIf}
+  Push "$0"
+  Call MineradioNormalizeInstallDir
+  Pop $0
+  StrCpy $INSTDIR "$0"
+  SendMessage $MineradioDirectoryInput ${WM_SETTEXT} 0 "STR:$INSTDIR"
+FunctionEnd
+!endif
