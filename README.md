@@ -1,4 +1,5 @@
 # Mineradio for Sade
+<img width="1280" height="719" alt="image" src="https://github.com/user-attachments/assets/0b7f23fa-ba53-4270-aa7c-9664b7dd2ff3" />
 
 Mineradio for Sade — доработанная версия Windows-плеера Mineradio: погодное радио, лирик-сцена, частицы и 3D-полка плейлистов дополнены поддержкой **локальной библиотеки MP3/FLAC** и **Яндекс Музыки** вместо оригинальных Netease/QQ Music.
 
